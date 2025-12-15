@@ -5,6 +5,8 @@ const cookieParser = require('cookie-parser');
 const { PrismaClient } = require('@prisma/client');
 const  middleware  = require('./utils/middleware');
 
+
+const api = require('express').Router();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -30,22 +32,25 @@ const userRoutes = require('./routes/user.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const { listDasboard } = require('./controllers/home.Controller');
 
-app.use('/', indexRoutes);
-app.use('/event', eventRoutes);
-app.use('/participant', participantRoutes);
-app.use('/user', userRoutes);
-app.use('/upload', uploadRoutes);
-app.get('/dashboard',middleware.authMiddleware(), listDasboard);
+api.use('/', indexRoutes);
+api.use('/event', eventRoutes);
+api.use('/participant', participantRoutes);
+api.use('/user', userRoutes);
+api.use('/upload', uploadRoutes);
+api.get('/dashboard',middleware.authMiddleware(), listDasboard);
 
 
 
-app.get('/costumer', middleware.authMiddleware(), (req, res) => {
+api.get('/costumer', middleware.authMiddleware(), (req, res) => {
   res.json({ data: req.data });
 });
 
-app.get('/admin', middleware.authMiddleware(true), (req, res) => {
+api.get('/admin', middleware.authMiddleware(true), (req, res) => {
   res.json({ data: req.data});
 });
+
+app.use('/api', api);
+
 
 app.use((req, res) => {
   res.status(404).json({ status: 'erro', message: 'Rota não encontrada' });
